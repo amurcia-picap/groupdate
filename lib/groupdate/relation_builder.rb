@@ -27,7 +27,7 @@ module Groupdate
       adapter_name = @relation.connection.adapter_name
       query =
         case adapter_name
-        when "MySQL", "Mysql2", "Mysql2Spatial", 'Mysql2Rgeo', "ODBC"
+        when "MySQL", "Mysql2", "Mysql2Spatial", 'Mysql2Rgeo'
           case period
           when :day_of_week
             ["DAYOFWEEK(CONVERT_TZ(DATE_SUB(#{column}, INTERVAL #{day_start} second), '+00:00', ?)) - 1", time_zone]
@@ -83,7 +83,7 @@ module Groupdate
           else
             ["(DATE_TRUNC('#{period}', (#{column}::timestamptz - INTERVAL '#{day_start} second') AT TIME ZONE ?) + INTERVAL '#{day_start} second') AT TIME ZONE ?", time_zone, time_zone]
           end
-        when "SQLite"
+        when "SQLite", "ODBC"
           raise Groupdate::Error, "Time zones not supported for SQLite" unless @time_zone.utc_offset.zero?
           raise Groupdate::Error, "day_start not supported for SQLite" unless day_start.zero?
           raise Groupdate::Error, "week_start not supported for SQLite" unless week_start == 6
