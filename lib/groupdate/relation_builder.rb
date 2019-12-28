@@ -64,7 +64,7 @@ module Groupdate
 
             ["DATE_ADD(CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(DATE_SUB(#{column}, INTERVAL #{day_start} second), '+00:00', ?), '#{format}'), ?, '+00:00'), INTERVAL #{day_start} second)", time_zone, time_zone]
           end
-        when "PostgreSQL", "PostGIS"
+        when "PostgreSQL", "PostGIS", "ODBC"
           case period
           when :day_of_week
             ["EXTRACT(DOW from #{column}::timestamptz - INTERVAL '#{day_start} second')::integer"]
@@ -83,7 +83,7 @@ module Groupdate
           else
             ["(DATE_TRUNC('#{period}', (#{column}::timestamptz - INTERVAL '#{day_start} second') ) + INTERVAL '#{day_start} second') "]
           end
-        when "SQLite", "ODBC"
+        when "SQLite"
           raise Groupdate::Error, "Time zones not supported for SQLite" unless @time_zone.utc_offset.zero?
           raise Groupdate::Error, "day_start not supported for SQLite" unless day_start.zero?
           raise Groupdate::Error, "week_start not supported for SQLite" unless week_start == 6
