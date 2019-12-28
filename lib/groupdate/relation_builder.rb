@@ -27,7 +27,7 @@ module Groupdate
       adapter_name = @relation.connection.adapter_name
       query =
         case adapter_name
-        when "MySQL", "Mysql2", "Mysql2Spatial", 'Mysql2Rgeo'
+        when "MySQL", "Mysql2", "Mysql2Spatial", 'Mysql2Rgeo', "ODBC"
           case period
           when :day_of_week
             ["DAYOFWEEK(CONVERT_TZ(DATE_SUB(#{column}, INTERVAL #{day_start} second), '+00:00', ?)) - 1", time_zone]
@@ -64,7 +64,7 @@ module Groupdate
 
             ["DATE_ADD(CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(DATE_SUB(#{column}, INTERVAL #{day_start} second), '+00:00', ?), '#{format}'), ?, '+00:00'), INTERVAL #{day_start} second)", time_zone, time_zone]
           end
-        when "PostgreSQL", "PostGIS", "ODBC"
+        when "PostgreSQL", "PostGIS"
           case period
           when :day_of_week
             ["EXTRACT(DOW from #{column}::timestamptz - INTERVAL '#{day_start} second')::integer"]
